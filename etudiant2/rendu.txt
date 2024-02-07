@@ -1,0 +1,922 @@
+
+Bonsoir Malik,
+Voici le TP sous format email.
+Si tu as du temps pour m'aider a régler mon pn avec mon compte Github ce serait sympa.
+
+dump.sql
+-- phpMyAdmin SQL Dump
+-- version 4.9.5deb2
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : localhost:3306
+-- Généré le : jeu. 25 jan. 2024 à 14:19
+-- Version du serveur :  8.0.35-0ubuntu0.20.04.1
+-- Version de PHP : 8.2.14
+
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+
+--
+-- Base de données : `module6`
+--
+
+
+-- --------------------------------------------------------
+
+
+--
+-- Structure de la table `etudiants`
+--
+
+
+CREATE
+TABLE
+`etudiants` (
+ 
+`id`
+int
+NOT
+NULL,
+ 
+`prenom`
+varchar(100)
+NOT
+NULL,
+ 
+`nom`
+varchar(100)
+NOT
+NULL,
+ 
+`email`
+varchar(100)
+NOT
+NULL,
+ 
+`cv`
+varchar(60000)
+DEFAULT
+'CV de l''étudiant',
+ 
+`dt_naissance`
+date
+DEFAULT
+NULL,
+ 
+`isAdmin`
+tinyint(1)
+DEFAULT
+'0',
+ 
+`dt_mis_a_jour`
+timestamp
+NOT
+NULL
+DEFAULT
+CURRENT_TIMESTAMP
+ON
+UPDATE
+CURRENT_TIMESTAMP
+)
+ENGINE=InnoDB
+DEFAULT
+CHARSET=latin1;
+
+
+--
+-- Déchargement des données de la table `etudiants`
+--
+
+
+INSERT
+INTO
+`etudiants` (`id`,
+`prenom`,
+`nom`,
+`email`,
+`cv`,
+`dt_naissance`,
+`isAdmin`,
+`dt_mis_a_jour`)
+VALUES
+(1,
+'John',
+'Doe',
+'john.doe@example.com',
+'CV de John',
+'1990-01-15',
+0,
+'2024-01-25 13:07:59'),
+(2,
+'Jane',
+'Smith',
+'jane.smith@example.com',
+'CV de Jane',
+'1992-03-22',
+1,
+'2024-01-25 13:07:59'),
+(3,
+'Alice',
+'Johnson',
+'alice.johnson@example.com',
+'CV de Alice',
+'1988-07-10',
+0,
+'2024-01-25 13:07:59'),
+(4,
+'Bob',
+'Jones',
+'bob.jones@example.com',
+'CV de Bob',
+'1995-05-18',
+0,
+'2024-01-25 13:07:59'),
+(5,
+'Emily',
+'Brown',
+'emily.brown@example.com',
+'CV de Emily',
+'1991-09-30',
+1,
+'2024-01-25 13:07:59'),
+(6,
+'David',
+'White',
+'david.white@example.com',
+'CV de David',
+'1989-12-03',
+0,
+'2024-01-25 13:07:59'),
+(7,
+'Sophie',
+'Miller',
+'sophie.miller@example.com',
+'CV de Sophie',
+'1993-08-26',
+0,
+'2024-01-25 13:07:59'),
+(8,
+'Michael',
+'Clark',
+'michael.clark@example.com',
+'CV de Michael',
+'1994-11-07',
+1,
+'2024-01-25 13:07:59'),
+(9,
+'Emma',
+'Taylor',
+'emma.taylor@example.com',
+'CV de Emma',
+'1987-04-14',
+0,
+'2024-01-25 13:07:59'),
+(10,
+'Daniel',
+'Wilson',
+'daniel.wilson@example.com',
+'CV de Daniel',
+'1996-02-09',
+0,
+'2024-01-25 13:07:59');
+COMMIT;
+
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+
+afficher-tout-etudiant.php
+<?php
+
+
+//http://192.168.15.19/afficher-tout-etudiant.php
+// Connexion à la base de données avec PDO
+$serveur
+ = "localhost";
+$baseDeDonnees
+ = "module6";
+$utilisateur
+ = "root";
+$motDePasse
+ = "demo";
+
+
+   
+$connexion =
+new
+PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8",
+$utilisateur,
+$motDePasse);
+
+
+
+
+// Récupérer les données de la table "etudiants"
+$sql
+ = "SELECT
+*
+FROM etudiants";
+$resultat
+ = $connexion->query($sql);
+
+
+// Afficher les données sous forme de tableau HTML
+echo
+"<table border='1'>
+        <tr>
+            <th>ID</th>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>CV</th>
+            <th>Date de Naissance</th>
+            <th>isAdmin</th>
+            <th>Date de Mise à Jour</th>
+        </tr>";
+
+
+while
+ ($row =
+$resultat->fetch(PDO::FETCH_ASSOC))
+ {
+   
+echo
+"<tr>
+            <td>{$row['id']}</td>
+            <td>{$row['prenom']}</td>
+            <td>{$row['nom']}</td>
+            <td>{$row['email']}</td>
+            <td>{$row['cv']}</td>
+            <td>{$row['dt_naissance']}</td>
+            <td>{$row['isAdmin']}</td>
+            <td>{$row['dt_mis_a_jour']}</td>
+          </tr>";
+}
+
+
+echo
+"</table>";
+
+
+// Fermer la connexion
+$connexion
+ = null;
+?>
+
+
+
+afficher-un-etudiant.php
+<?php
+//http://192.168.15.19/afficher-un-etudiant.php
+
+
+// Connexion à la base de données
+$serveur
+ = "localhost";
+$baseDeDonnees
+ = "module6";
+$utilisateur
+ = "root";
+$motDePasse
+ = "demo";
+
+
+$connexion
+ = new
+mysqli($serveur,
+$utilisateur,
+$motDePasse,
+$baseDeDonnees);
+
+
+// Vérifier la connexion
+if
+ ($connexion->connect_error)
+ {
+   
+die("Échec
+ de la connexion : " .
+$connexion->connect_error);
+}
+
+
+// Vérifier si l'id est passé en paramètre
+if
+ (isset($_GET["id"]))
+ {
+   
+// Échapper les données d'entrée pour éviter les attaques par injection SQL
+   
+$id =
+$connexion->real_escape_string($_GET["id"]);
+
+
+   
+// Récupérer les données de l'étudiant avec l'id spécifié
+   
+$sql =
+"SELECT
+*
+FROM etudiants
+WHERE id
+=
+$id";
+   
+$resultat =
+$connexion->query($sql);
+
+
+   
+if ($resultat->num_rows
+ > 0) {
+       
+// Afficher les données de l'étudiant
+       
+$row =
+$resultat->fetch_assoc();
+       
+echo
+"<h2>Profil de l'étudiant</h2>";
+       
+echo
+"<p><strong>Prénom:</strong> {$row['prenom']}</p>";
+       
+echo
+"<p><strong>Nom:</strong> {$row['nom']}</p>";
+       
+echo
+"<p><strong>Email:</strong> {$row['email']}</p>";
+       
+echo
+"<p><strong>Date de Naissance:</strong> {$row['dt_naissance']}</p>";
+       
+echo
+"<p><strong>isAdmin:</strong> {$row['isAdmin']}</p>";
+       
+echo
+"<p><strong>Date de Mise à Jour:</strong> {$row['dt_mis_a_jour']}</p>";
+    }
+else {
+       
+// L'étudiant n'est pas présent dans la base de données
+       
+echo
+"<p>L'étudiant avec l'ID
+$id n'est pas présent dans la
+ base de données.</p>";
+    }
+}
+else {
+   
+// L'ID n'a pas été spécifié dans l'URL
+   
+echo
+"<p>Aucun ID d'étudiant spécifié dans l'URL.</p>";
+}
+
+
+// Fermer la connexion
+$connexion->close();
+?>
+
+
+
+modifier-un-etudiant.php
+<?php
+//http://192.168.15.19/modifier-un-etudiant.php
+
+
+// Connexion à la base de données
+$serveur
+ = "localhost";
+$baseDeDonnees
+ = "module6";
+$utilisateur
+ = "root";
+$motDePasse
+ = "demo";
+
+
+$connexion
+ = new
+mysqli($serveur,
+$utilisateur,
+$motDePasse,
+$baseDeDonnees);
+
+
+// Vérifier la connexion
+if
+ ($connexion->connect_error)
+ {
+   
+die("Échec
+ de la connexion : " .
+$connexion->connect_error);
+}
+// Vérifier si le formulaire est soumis
+if
+ ($_SERVER["REQUEST_METHOD"]
+ == "POST") {
+   
+// Échapper les données d'entrée pour éviter les attaques par injection SQL
+   
+$prenom =
+$connexion->real_escape_string($_POST["prenom"]);
+   
+$nom =
+$connexion->real_escape_string($_POST["nom"]);
+   
+$email =
+$connexion->real_escape_string($_POST["email"]);
+   
+$cv =
+$connexion->real_escape_string($_POST["cv"]);
+   
+$dt_naissance =
+$connexion->real_escape_string($_POST["dt_naissance"]);
+   
+$isAdmin =
+isset($_POST["isAdmin"])
+ ? 1 :
+0;
+// Vérifie si la case isAdmin est cochée
+
+
+   
+// Écrire la requête SQL pour modifier le profil étudiant
+   
+$sql =
+"UPDATE
+ etudiants SET
+            prenom
+= '$prenom',
+            nom
+= '$nom',
+            email
+= '$email',
+            cv
+= '$cv',
+            dt_naissance
+= '$dt_naissance',
+            isAdmin
+=
+$isAdmin
+           
+WHERE id
+=
+5";
+
+
+   
+if ($connexion->query($sql)
+ === TRUE) {
+       
+// Message de confirmation si la modification est réussie
+       
+echo
+"<p>Le profil étudiant a bien été modifié.</p>";
+    }
+else {
+       
+// Message d'erreur si la modification échoue
+       
+echo
+"<p>Erreur lors de la modification de l'étudiant : "
+ . $connexion->error
+ . "</p>";
+    }
+}
+
+
+// Fermer la connexion
+$connexion->close();
+?>
+
+
+<!DOCTYPE
+html>
+<html
+lang="fr">
+<head>
+   
+<meta
+charset="UTF-8">
+   
+<meta
+name="viewport"
+content="width=device-width,
+ initial-scale=1.0">
+   
+<title>Modifier
+ un étudiant</title>
+</head>
+<body>
+
+
+<h2>Modifier
+ un étudiant</h2>
+
+
+<form
+method="post"
+action="">
+   
+<label
+for="prenom">Prénom:</label>
+   
+<input
+type="text"
+name="prenom"
+required><br>
+
+
+   
+<label
+for="nom">Nom:</label>
+   
+<input
+type="text"
+name="nom"
+required><br>
+
+
+   
+<label
+for="email">Email:</label>
+   
+<input
+type="email"
+name="email"
+required><br>
+
+
+   
+<label
+for="cv">CV:</label>
+   
+<textarea
+name="cv"
+rows="4"
+cols="50"></textarea><br>
+
+
+   
+<label
+for="dt_naissance">Date
+ de Naissance:</label>
+   
+<input
+type="date"
+name="dt_naissance"
+required><br>
+
+
+   
+<label
+for="isAdmin">isAdmin:</label>
+   
+<input
+type="checkbox"
+name="isAdmin"><br>
+
+
+   
+<input
+type="submit"
+value="Modifier">
+</form>
+
+
+</body>
+</html>
+
+
+
+modifier-un-etudiant2.php
+<?php
+//http://192.168.15.19/modifier-un-etudiant2.php
+
+
+// Connexion à la base de données
+$serveur
+ = "localhost";
+$baseDeDonnees
+ = "module6";
+$utilisateur
+ = "root";
+$motDePasse
+ = "demo";
+
+
+$connexion
+ = new
+mysqli($serveur,
+$utilisateur,
+$motDePasse,
+$baseDeDonnees);
+
+
+// Vérifier la connexion
+if
+ ($connexion->connect_error)
+ {
+   
+die("Échec
+ de la connexion : " .
+$connexion->connect_error);
+}
+
+
+// Vérifier si l'ID est passé en paramètre
+if
+ (isset($_GET["id"]))
+ {
+   
+// Échapper les données d'entrée pour éviter les attaques par injection SQL
+   
+$id =
+$connexion->real_escape_string($_GET["id"]);
+
+
+   
+// Requête SQL pour sélectionner le profil étudiant avec l'ID spécifié
+   
+$sql =
+"SELECT
+*
+FROM etudiants
+WHERE id
+=
+$id";
+   
+$resultat =
+$connexion->query($sql);
+
+
+   
+if ($resultat->num_rows
+ > 0) {
+       
+// Récupérer les données de l'étudiant
+       
+$row =
+$resultat->fetch_assoc();
+
+
+       
+// Vérifier si le formulaire est soumis pour mettre à jour le profil étudiant
+       
+if ($_SERVER["REQUEST_METHOD"]
+ == "POST") {
+           
+// Échapper les données d'entrée pour éviter les attaques par injection SQL
+           
+$prenom =
+$connexion->real_escape_string($_POST["prenom"]);
+           
+$nom =
+$connexion->real_escape_string($_POST["nom"]);
+           
+$email =
+$connexion->real_escape_string($_POST["email"]);
+           
+$cv =
+$connexion->real_escape_string($_POST["cv"]);
+           
+$dt_naissance =
+$connexion->real_escape_string($_POST["dt_naissance"]);
+           
+$isAdmin =
+isset($_POST["isAdmin"])
+ ? 1 :
+0;
+// Vérifie si la case isAdmin est cochée
+
+
+           
+// Requête SQL pour mettre à jour le profil étudiant avec les nouvelles données
+           
+$sql_update =
+"UPDATE
+ etudiants SET
+                            prenom
+= '$prenom',
+                            nom
+= '$nom',
+                            email
+= '$email',
+                            cv
+= '$cv',
+                            dt_naissance
+= '$dt_naissance',
+                            isAdmin
+=
+$isAdmin
+                           
+WHERE id
+=
+$id";
+
+
+           
+if ($connexion->query($sql_update)
+ === TRUE) {
+               
+// Message de confirmation si la mise à jour est réussie
+               
+echo
+"<p>Le profil étudiant a bien été mis à jour.</p>";
+            }
+else {
+               
+// Message d'erreur si la mise à jour échoue
+               
+echo
+"<p>Erreur lors de la mise à jour de l'étudiant : "
+ . $connexion->error
+ . "</p>";
+            }
+        }
+
+
+       
+// Formulaire rempli avec les données de l'étudiant
+       
+echo
+"
+        <form method='post' action=''>
+            <label for='prenom'>Prénom:</label>
+            <input type='text' name='prenom' value='{$row['prenom']}'
+ required><br>
+
+
+            <label for='nom'>Nom:</label>
+            <input type='text' name='nom' value='{$row['nom']}'
+ required><br>
+
+
+            <label for='email'>Email:</label>
+            <input type='email' name='email' value='{$row['email']}'
+ required><br>
+
+
+            <label for='cv'>CV:</label>
+            <textarea name='cv' rows='4' cols='50'>{$row['cv']}</textarea><br>
+
+
+            <label for='dt_naissance'>Date de Naissance:</label>
+            <input type='date' name='dt_naissance' value='{$row['dt_naissance']}'
+ required><br>
+
+
+            <label for='isAdmin'>isAdmin:</label>
+            <input type='checkbox' name='isAdmin' "
+ . ($row['isAdmin']
+ ? "checked" :
+"") .
+"><br>
+
+
+            <input type='submit' value='Mettre à jour'>
+        </form>";
+    }
+else {
+       
+// L'étudiant n'est pas présent dans la base de données
+       
+echo
+"<p>L'étudiant avec l'ID
+$id n'est pas présent dans la
+ base de données.</p>";
+    }
+}
+else {
+   
+// L'ID n'a pas été spécifié dans l'URL
+   
+echo
+"<p>Aucun ID d'étudiant spécifié dans l'URL.</p>";
+}
+
+
+// Fermer la connexion
+$connexion->close();
+?>
+
+
+
+
+supprimer-un-etudiant.php
+<?php
+//http://192.168.15.19/supprimer-un-etudiant.php
+
+
+// Connexion à la base de données
+$serveur
+ = "localhost";
+$baseDeDonnees
+ = "module6";
+$utilisateur
+ = "root";
+$motDePasse
+ = "demo";
+
+
+$connexion
+ = new
+mysqli($serveur,
+$utilisateur,
+$motDePasse,
+$baseDeDonnees);
+
+
+// Vérifier la connexion
+if
+ ($connexion->connect_error)
+ {
+   
+die("Échec
+ de la connexion : " .
+$connexion->connect_error);
+}
+
+
+// Vérifier si l'id est passé en paramètre
+if
+ (isset($_GET["id"]))
+ {
+   
+// Échapper les données d'entrée pour éviter les attaques par injection SQL
+   
+$id =
+$connexion->real_escape_string($_GET["id"]);
+
+
+   
+// Créer une requête SQL pour supprimer le profil étudiant avec l'id spécifié
+   
+$sql =
+"DELETE
+FROM etudiants
+WHERE id
+=
+$id";
+   
+   
+if ($connexion->query($sql)
+ === TRUE) {
+       
+// Message de confirmation si la suppression est réussie
+       
+echo
+"<p>Le profil étudiant avec l'ID
+$id a bien été supprimé.</p>";
+    }
+else {
+       
+// Message d'erreur si la suppression échoue
+       
+echo
+"<p>Erreur lors de la suppression de l'étudiant : "
+ . $connexion->error
+ . "</p>";
+    }
+}
+else {
+   
+// L'ID n'a pas été spécifié dans l'URL
+   
+echo
+"<p>Aucun ID d'étudiant spécifié dans l'URL.</p>";
+}
+
+
+// Fermer la connexion
+$connexion->close();
+?>
+
+
+
+Bonne reception
+Habib
+
+
+
+
+
